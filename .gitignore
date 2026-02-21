@@ -1,0 +1,97 @@
+# ==============================
+# Compiled binaries / executables
+# ==============================
+
+*.exe
+*.out
+*.app
+*.o
+*.obj
+*.a
+*.so
+*.dll
+*.dylib
+
+# Main build outputs
+dpi_engine
+dpi_engine.exe
+
+# ==============================
+# Build directories
+# ==============================
+
+build/
+bin/
+dist/
+cmake-build-*/
+
+# CMake files (if added later)
+CMakeFiles/
+CMakeCache.txt
+Makefile
+
+# ==============================
+# Debug / profiling files
+# ==============================
+
+*.log
+*.tmp
+*.cache
+*.core
+*.stackdump
+
+# ==============================
+# Output PCAP files
+# (Keep sample input but ignore generated outputs)
+# ==============================
+
+output*.pcap
+result*.pcap
+
+# ==============================
+# Editor / IDE files
+# ==============================
+
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Visual Studio
+*.vcxproj*
+*.sln
+*.user
+
+# ==============================
+# OS-specific junk
+# ==============================
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# Linux
+*~
+
+# ==============================
+# Python envs (if future AI integration added)
+# ==============================
+
+venv/
+.env
+
+# ==============================
+# Node (if frontend added later)
+# ==============================
+
+node_modules/
+
+# ==============================
+# Temporary files
+# ==============================
+
+*.bak
+*.old
