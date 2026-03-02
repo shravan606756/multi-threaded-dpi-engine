@@ -4,7 +4,7 @@ A complete end-to-end network traffic analysis system combining a high-performan
 
 ---
 
-## 🎯 System Overview
+## System Overview
 
 This platform provides enterprise-grade network traffic analysis through three integrated components:
 
