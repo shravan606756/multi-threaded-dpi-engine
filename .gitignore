@@ -1,7 +1,40 @@
-# ==============================
-# Compiled binaries / executables
-# ==============================
+# ==========================================
+# General / OS / Temporary Files
+# ==========================================
+.DS_Store
+Thumbs.db
+desktop.ini
+*~
+*~.nib
+*.bak
+*.old
+*.tmp
+/tmp/
+*.log
+*.swp
+*.swo
 
+# ==========================================
+# Editor / IDE files
+# ==========================================
+.idea/
+.vscode/
+*.iws
+*.iml
+*.ipr
+*.sln
+*.user
+*.vcxproj*
+
+# Eclipse
+.classpath
+.project
+.settings/
+
+# ==========================================
+# dpi-engine (C++ / CMake)
+# ==========================================
+# Compiled binaries
 *.exe
 *.out
 *.app
@@ -12,86 +45,62 @@
 *.dll
 *.dylib
 
-# Main build outputs
-dpi_engine
-dpi_engine.exe
+# Engine specific output
+dpi-engine/dpi_engine
+output*.pcap
+result*.pcap
 
-# ==============================
-# Build directories
-# ==============================
+# Engine build directories
+dpi-engine/build/
+dpi-engine/bin/
+dpi-engine/dist/
+dpi-engine/cmake-build-*/
+dpi-engine/CMakeFiles/
+dpi-engine/CMakeCache.txt
+dpi-engine/Makefile
 
-build/
-bin/
-dist/
-cmake-build-*/
-
-# CMake files (if added later)
-CMakeFiles/
-CMakeCache.txt
-Makefile
-
-# ==============================
-# Debug / profiling files
-# ==============================
-
-*.log
-*.tmp
+# Profiling
 *.cache
 *.core
 *.stackdump
 
-# ==============================
-# Output PCAP files
-# (Keep sample input but ignore generated outputs)
-# ==============================
+# ==========================================
+# dpi-backend (Spring Boot / Java)
+# ==========================================
+*.class
+dpi-backend/target/
+dpi-backend/out/
+dpi-backend/bin/
 
-output*.pcap
-result*.pcap
+# Maven specific
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+dpi-backend/.mvn/timing.properties
+dpi-backend/.mvn/wrapper/maven-wrapper.jar
 
-# ==============================
-# Editor / IDE files
-# ==============================
+# Application properties
+application-local.yml
+application-dev.yml
 
-.vscode/
-.idea/
-*.swp
-*.swo
+# DPI Storage
+dpi-backend/dpi/input/*
+dpi-backend/dpi/output/*
 
-# Visual Studio
-*.vcxproj*
-*.sln
-*.user
+# ==========================================
+# dpi-frontend (React / Node)
+# ==========================================
+dpi-frontend/node_modules/
+dpi-frontend/dist/
+dpi-frontend/build/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
 
-# ==============================
-# OS-specific junk
-# ==============================
-
-# macOS
-.DS_Store
-
-# Windows
-Thumbs.db
-desktop.ini
-
-# Linux
-*~
-
-# ==============================
-# Python envs (if future AI integration added)
-# ==============================
-
+# Python envs (if AI integration added)
 venv/
 .env
-
-# ==============================
-# Node (if frontend added later)
-# ==============================
-
-node_modules/
-
-# ==============================
-# Temporary files
-# ==============================
-
-*.bak
-*.old
