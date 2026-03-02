@@ -428,7 +428,7 @@ dpi-analysis-backend/
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -504,7 +504,7 @@ docker-compose down
 
 ---
 
-## 📡 REST API Reference
+## REST API Reference
 
 ### 1. Health Check
 ```http
@@ -666,7 +666,7 @@ print(result.json())
 
 ---
 
-## 🔧 Key Backend Features
+## Key Backend Features
 
 ### Asynchronous Processing
 - Uses Spring's `@Async` for non-blocking execution
@@ -776,7 +776,7 @@ curl http://localhost:8080/api/health
 
 ---
 
-## 📊 System Integration Flow
+## System Integration Flow
 ```
 ┌─────────────┐
 │   Client    │
