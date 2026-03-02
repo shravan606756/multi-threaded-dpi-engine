@@ -875,9 +875,7 @@ This project is for educational and portfolio purposes.
 - **Spring Boot Backend**: Orchestration, API layer, and AI integration
 - **System Architecture**: End-to-end platform design
 
-**LinkedIn:** [Your LinkedIn]  
-**GitHub:** [Your GitHub]  
-**Email:** [Your Email]
+**Email:** [shravanudawat33@gmail.com]
 
 ---
 
