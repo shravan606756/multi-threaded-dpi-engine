@@ -1,0 +1,132 @@
+{
+  "info": {
+    "name": "DPI Analysis Backend API",
+    "description": "Complete API collection for DPI Analysis Backend",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api",
+      "type": "string"
+    },
+    {
+      "key": "jobId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Check if the service is running"
+      }
+    },
+    {
+      "name": "Start Analysis",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "const response = pm.response.json();",
+              "pm.collectionVariables.set('jobId', response.jobId);"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "formdata",
+          "formdata": [
+            {
+              "key": "file",
+              "type": "file",
+              "src": "/path/to/your/file.pcap",
+              "description": "PCAP file to analyze"
+            },
+            {
+              "key": "lbs",
+              "value": "1000",
+              "type": "text",
+              "description": "Load Balancing Strategy"
+            },
+            {
+              "key": "fps",
+              "value": "5000",
+              "type": "text",
+              "description": "Flow Per Second"
+            },
+            {
+              "key": "blockApps",
+              "value": "YouTube",
+              "type": "text",
+              "description": "Application to block"
+            },
+            {
+              "key": "blockApps",
+              "value": "Netflix",
+              "type": "text",
+              "description": "Application to block"
+            },
+            {
+              "key": "blockDomains",
+              "value": "example.com",
+              "type": "text",
+              "description": "Domain to block"
+            },
+            {
+              "key": "blockIps",
+              "value": "192.168.1.1",
+              "type": "text",
+              "description": "IP to block"
+            }
+          ]
+        },
+        "url": {
+          "raw": "{{baseUrl}}/analysis/run",
+          "host": ["{{baseUrl}}"],
+          "path": ["analysis", "run"]
+        },
+        "description": "Submit a PCAP file for analysis"
+      }
+    },
+    {
+      "name": "Check Status",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/analysis/status/{{jobId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["analysis", "status", "{{jobId}}"]
+        },
+        "description": "Check the status of an analysis job"
+      }
+    },
+    {
+      "name": "Get Results",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/analysis/result/{{jobId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["analysis", "result", "{{jobId}}"]
+        },
+        "description": "Retrieve the complete analysis results"
+      }
+    }
+  ]
+}
