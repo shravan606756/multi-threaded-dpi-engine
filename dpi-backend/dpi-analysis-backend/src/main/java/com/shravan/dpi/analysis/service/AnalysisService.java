@@ -29,46 +29,34 @@ import java.io.IOException;
 @Service
 public class AnalysisService {
 
-    @Value("${dpi.engine.dir}")
-    private String engineDir;
-
-    @Value("${dpi.engine.binary}")
-    private String engineBinary;
-
-    @Value("${dpi.engine.storage.input}")
-    private String relativeInputDir;
-
-    @Value("${dpi.engine.storage.output}")
-    private String relativeOutputDir;
-
     private final DpiEngineService dpiEngineService;
     private final AiService aiService;
     private final RedisTemplate<String, Object> redisTemplate;
-    private final DpiEngineConfig dpiEngineConfig;
     private final ObjectMapper objectMapper;
+
+    @Value("${dpi.engine.storage.input}")
+    private String inputDir;
+
+    @Value("${dpi.engine.storage.output}")
+    private String outputDir;
 
     private static final String STATUS_RUNNING = "RUNNING";
     private static final String STATUS_DONE = "DONE";
     private static final String STATUS_FAILED = "FAILED";
 
-    public AnalysisService(DpiEngineService dpiEngineService, 
-                          AiService aiService,
-                          RedisTemplate<String, Object> redisTemplate,
-                          DpiEngineConfig dpiEngineConfig) {
+    public AnalysisService(DpiEngineService dpiEngineService,
+                           AiService aiService,
+                           RedisTemplate<String, Object> redisTemplate) {
         this.dpiEngineService = dpiEngineService;
         this.aiService = aiService;
         this.redisTemplate = redisTemplate;
-        this.dpiEngineConfig = dpiEngineConfig;
         this.objectMapper = new ObjectMapper();
     }
 
     public String startAnalysis(MultipartFile file, AnalysisRequest request) throws IOException {
-        // 1. Resolve absolute paths for the C++ engine
-        String absoluteInputPath = Paths.get(relativeInputDir).toAbsolutePath().normalize().toString();
-
-        // 2. Ensure directories exist (replaces hardcoded C:/ paths)
-        Files.createDirectories(Paths.get(absoluteInputPath));
-        Files.createDirectories(Paths.get(relativeOutputDir).toAbsolutePath().normalize());
+        // Ensure directories exist
+        Files.createDirectories(Paths.get(inputDir));
+        Files.createDirectories(Paths.get(outputDir));
 
         String jobId = UUID.randomUUID().toString();
 
@@ -76,8 +64,8 @@ public class AnalysisService {
         String statusKey = RedisKeys.jobStatus(jobId);
         redisTemplate.opsForValue().set(statusKey, STATUS_RUNNING, 24, TimeUnit.HOURS);
 
-        // Save file using the resolved absolute path
-        String filePath = FileUtil.saveUploadedFile(file, absoluteInputPath);
+        // Save uploaded file
+        String filePath = FileUtil.saveUploadedFile(file, inputDir);
 
         // Trigger async processing
         processInBackground(jobId, filePath, request);
@@ -91,17 +79,16 @@ public class AnalysisService {
         String resultKey = RedisKeys.jobResult(jobId);
 
         try {
-            // 3. Resolve engine path dynamically before passing to the engine service
-            Path enginePath = Paths.get(engineDir, engineBinary).toAbsolutePath().normalize();
+            // ✅ Execute DPI engine (gets binary path from config internally)
+            String dpiJsonOutput = dpiEngineService.executeDpi(filePath, request);
 
-            // Execute DPI engine - passing the dynamic engine path
-            String dpiJsonOutput = dpiEngineService.executeDpi(enginePath.toString(), filePath, request);
-
+            // Parse and process results
             DpiResult dpiResult = JsonParser.parseDpiResult(dpiJsonOutput);
             AiExplanation aiExplanation = aiService.generateExplanation(dpiResult);
 
             ResultResponse resultResponse = new ResultResponse(jobId, dpiResult, aiExplanation);
 
+            // Store results
             redisTemplate.opsForValue().set(resultKey, resultResponse, 24, TimeUnit.HOURS);
             redisTemplate.opsForValue().set(statusKey, STATUS_DONE, 24, TimeUnit.HOURS);
 
@@ -126,7 +113,6 @@ public class AnalysisService {
     }
 
     public ResultResponse getResult(String jobId) {
-        // Check if job exists
         String statusKey = RedisKeys.jobStatus(jobId);
         Object status = redisTemplate.opsForValue().get(statusKey);
 
@@ -134,12 +120,10 @@ public class AnalysisService {
             throw new JobNotFoundException("Job not found: " + jobId);
         }
 
-        // Check if job is complete
         if (!STATUS_DONE.equals(status.toString())) {
             throw new RuntimeException("Job is not complete yet. Current status: " + status);
         }
 
-        // Retrieve result
         String resultKey = RedisKeys.jobResult(jobId);
         Object result = redisTemplate.opsForValue().get(resultKey);
 
@@ -147,7 +131,6 @@ public class AnalysisService {
             throw new RuntimeException("Result not found for job: " + jobId);
         }
 
-        // Convert to ResultResponse
         try {
             return objectMapper.convertValue(result, ResultResponse.class);
         } catch (Exception e) {

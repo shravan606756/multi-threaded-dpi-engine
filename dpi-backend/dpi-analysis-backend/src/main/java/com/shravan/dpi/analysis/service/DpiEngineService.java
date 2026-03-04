@@ -20,28 +20,26 @@ public class DpiEngineService {
         this.config = config;
     }
 
-    // 1. ADDED 'String enginePath' HERE so Java knows what it is!
-    public String executeDpi(String enginePath, String inputFilePath, AnalysisRequest request) {
+    // ✅ Remove enginePath parameter - get it from config
+    public String executeDpi(String inputFilePath, AnalysisRequest request) {
         try {
-            // Generate guaranteed absolute paths for Windows
             String inputFileName = new File(inputFilePath).getName();
             String outputFileName = "output_" + inputFileName;
 
             String absoluteInputPath = new File(inputFilePath).getAbsolutePath();
             String absoluteOutputPath = new File(config.getOutputStoragePath(), outputFileName).getAbsolutePath();
 
-            // Pass the enginePath straight through to your builder
+            // ✅ Get engine path from config
+            String enginePath = config.getBinaryPath();
+
             List<String> command = buildCommand(enginePath, absoluteInputPath, absoluteOutputPath, request);
 
-            // Log the command to the IntelliJ console so you can verify it
             System.out.println("EXECUTING C++ COMMAND: " + String.join(" ", command));
 
-            // Execute process
             ProcessBuilder processBuilder = new ProcessBuilder(command);
             processBuilder.redirectErrorStream(true);
             Process process = processBuilder.start();
 
-            // Capture output and JSON
             StringBuilder output = new StringBuilder();
             StringBuilder jsonOutput = new StringBuilder();
             boolean inJsonBlock = false;
@@ -51,28 +49,26 @@ public class DpiEngineService {
                 while ((line = reader.readLine()) != null) {
                     output.append(line).append("\n");
 
-                    // Detect the start of the JSON block
                     if (line.trim().equals("{")) {
                         inJsonBlock = true;
                     }
 
-                    // Once we start capturing, DO NOT STOP until the C++ engine finishes
                     if (inJsonBlock) {
                         jsonOutput.append(line).append("\n");
                     }
                 }
             }
 
-            // Wait for process to complete
             int exitCode = process.waitFor();
 
             if (exitCode != 0) {
                 throw new DpiExecutionException(
-                        "DPI engine failed with exit code " + exitCode + ".\nCommand: " + String.join(" ", command) + "\nOutput: " + output.toString()
+                        "DPI engine failed with exit code " + exitCode +
+                                "\nCommand: " + String.join(" ", command) +
+                                "\nOutput: " + output.toString()
                 );
             }
 
-            // Extract JSON portion
             String jsonResult = jsonOutput.toString().trim();
             if (jsonResult.isEmpty()) {
                 throw new DpiExecutionException(
@@ -83,7 +79,7 @@ public class DpiEngineService {
             return jsonResult;
 
         } catch (DpiExecutionException e) {
-            throw e; // Rethrow custom exceptions
+            throw e;
         } catch (Exception e) {
             throw new DpiExecutionException("Failed to execute DPI engine: " + e.getMessage(), e);
         }
@@ -92,16 +88,14 @@ public class DpiEngineService {
     private List<String> buildCommand(String enginePath, String inputFile, String outputFile, AnalysisRequest request) {
         List<String> command = new ArrayList<>();
 
-        // 2. Add the dynamic engine path as the VERY FIRST argument (the executable)
+        // Binary path
         command.add(enginePath);
 
-        // (REMOVED the old config.getBinaryPath() line here so it doesn't duplicate!)
-
-        // NO FLAGS (-i or -o) here! The C++ engine expects positional arguments.
+        // Positional arguments
         command.add(inputFile);
         command.add(outputFile);
 
-        // Reverting back to your original --lbs and --fps flags
+        // Flags
         command.add("--lbs");
         command.add(String.valueOf(request.getLbs() != null ? request.getLbs() : 2));
 
