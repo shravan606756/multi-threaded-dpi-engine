@@ -13,6 +13,7 @@ desktop.ini
 *.log
 *.swp
 *.swo
+.env
 
 # ==========================================
 # Editor / IDE files
