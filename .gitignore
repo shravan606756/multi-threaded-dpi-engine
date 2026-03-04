@@ -15,6 +15,7 @@ desktop.ini
 *.swo
 .env
 
+
 # ==========================================
 # Editor / IDE files
 # ==========================================
@@ -83,6 +84,12 @@ dependency-reduced-pom.xml
 buildNumber.properties
 dpi-backend/.mvn/timing.properties
 dpi-backend/.mvn/wrapper/maven-wrapper.jar
+
+# Ignore Maven build outputs
+target/
+*.jar
+*.war
+*.ear
 
 # Application properties
 application-local.yml
