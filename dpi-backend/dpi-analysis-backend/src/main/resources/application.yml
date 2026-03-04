@@ -37,13 +37,18 @@ server:
 # DPI Engine Configuration
 dpi:
   engine:
+    # UPDATED: Matches your actual local Windows path
+    dir: ${DPI_ENGINE_DIR:C:/Users/Shravan/Desktop/multi-threaded-dpi-engine/dpi-engine/Packet_analyzer-main/Packet_analyzer-main}
+    binary: ${DPI_ENGINE_BINARY:dpi_engine.exe}
 
-    dir: "../../dpi-engine/Packet_analyzer-main/Packet_analyzer-main"
-    binary: "dpi_engine.exe"
+      # For Docker, override with environment variables:
+      # DPI_ENGINE_DIR=/app/engine
+      # DPI_ENGINE_BINARY=dpi_engine
+
     storage:
+      input: ${DPI_ENGINE_STORAGE_INPUT:./storage/input}
+      output: ${DPI_ENGINE_STORAGE_OUTPUT:./storage/output}
 
-      input: "./storage/input"
-      output: "./storage/output"
     default:
       threads: 4
       lbs: 1000
